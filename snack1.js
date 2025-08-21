@@ -55,8 +55,9 @@ function getPost(id) {
                 ...post,
                 user,
               };
-              resolve(result).catch(reject);
-            });
+              resolve(result);
+            })
+            .catch(reject);
         })
         .catch(reject);
     }, 2000);
@@ -89,5 +90,48 @@ function lanciaDado() {
 }
 
 lanciaDado()
-  .then((result) => console.log(`Il risultato è: `, result))
+  .then((result) => console.log(`Il risultato di lanciaDado è: `, result))
+  .catch((error) => console.error(error));
+
+//🎯 Bonus: HOF con closure per memorizzare l'ultimo lancio
+// Modifica la funzione in creaLanciaDado(), che restituisce una closure che memorizza l'ultimo risultato.
+//  Se il numero esce due volte di fila, stampa "Incredibile!".
+// Correzioni eseguite: cambiato nome, assegnato  null alla variabile lancioIniziale, ho messo la function anonima dopo il return,
+// riasssegnato null a lancioIniziale quando il dado si incastra, tolto dall'else lancio iniziale = result e messo in resolve(result)(avevo messo lancioInziiale)
+// assegnato ad una variabile creaLanciaDado(), inseirto il secondo richiamo all'interno del .then(9 dopo il console.log())
+
+function creaLanciaDado() {
+  let lancioIniziale = null;
+
+  return function () {
+    new Promise((resolve, reject) => {
+      console.log("Sto lanciando il dado...");
+
+      const incastrato = Math.random() < 0.2;
+      if (incastrato) {
+        lancioIniziale = null;
+        reject(` il dado si è incastrato! Riprova`);
+      } else {
+        const result = Math.floor(Math.random() * 6) + 1;
+        if (result === lancioIniziale) {
+          console.log(`Incredibile! Ti è uscito 2 volte:`, result);
+        }
+        lancioIniziale = result;
+        resolve(result);
+      }
+    });
+  };
+}
+
+const lanciaDadoConMemoria = creaLanciaDado();
+
+lanciaDadoConMemoria()
+  .then((result) => {
+    console.log(`Il risultato di creaLanciaDado  è: `, result);
+    lanciaDadoConMemoria()
+      .then((result) =>
+        console.log(`Il risultato di creaLanciaDado  è: `, result)
+      )
+      .catch((error) => console.error(error));
+  })
   .catch((error) => console.error(error));
