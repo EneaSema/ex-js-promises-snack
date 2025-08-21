@@ -4,37 +4,42 @@
 
 function getPostTitle(id) {
   return new Promise((resolve, reject) => {
-    fetch(`https://dummyjson.com/posts/${id}`)
-      .then((response) => response.json())
-      .then((obj) => resolve(obj.title))
-      .catch(reject);
+    setTimeout(function () {
+      fetch(`https://dummyjson.com/posts/${id}`)
+        .then((response) => response.json())
+        .then((obj) => resolve(obj.title))
+        .catch(reject);
+    }, 2000);
   });
 }
 
-getPostTitle(5)
-  .then((response) => console.log(response))
+getPostTitle(1)
+  .then((title) => console.log(`il titolo del post è:`, title))
   .catch((error) => console.error(error));
 
 // 🎯 Bonus: Ottieni l'intero post con l'autore
 // Crea una funzione getPost(id) che recupera l'intero post.
 // Concatena una seconda chiamata che aggiunge una proprietà user che contiene i dati dell'autore, recuperati dalla chiamata https://dummyjson.com/users/{post.userId}.
 
-// function getpost(id) {
-//   return new Promise((resolve, reject) => {
-//     fetch(`https://dummyjson.com/posts/${id}`)
-//       .then((response) => console.log(response.json()))
-//       .then((data) => console.log(resolve(data.title)))
-//       .catch(reject);
-//   });
-// }
+function getPost(id) {
+  return new Promise((resolve, reject) => {
+    setTimeout(function () {
+      fetch(`https://dummyjson.com/posts/${id}`)
+        .then((response) => response.json())
+        .then(function (obj) {
+          resolve(obj.userId);
+          obj = {
+            user: fetch(`https://dummyjson.com/users/${post.userId}`)
+              .then((response) => response.json())
+              .then((obj) => resolve(obj.user))
+              .catch(reject),
+          };
+        })
+        .catch(reject);
+    }, 2000);
+  });
+}
 
-// {
-//         fetch(`https://dummyjson.com/users/${post.userId}`)
-//         .then((response) => console.log(response.json))
-//         .then((data)=> console.log(resolve(data)))
-//         .catch((reject))
-//       }
-
-// getPostTitle(1)
-//   .then((response) => console.log(response))
-//   .catch((error) => console.error(error));
+getPost(1)
+  .then((response) => console.log(response))
+  .catch((error) => console.error(error));
